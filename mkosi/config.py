@@ -1385,6 +1385,7 @@ class Config:
     cache_dir: Optional[Path]
     package_cache_dir: Optional[Path]
     build_dir: Optional[Path]
+    serve_dir: Optional[Path]
     image_id: Optional[str]
     image_version: Optional[str]
     split_artifacts: bool
@@ -2042,6 +2043,14 @@ SETTINGS = (
         parse=config_make_path_parser(required=False),
         paths=("mkosi.builddir",),
         help="Path to use as persistent build directory",
+    ),
+    ConfigSetting(
+        dest="serve_dir",
+        metavar="DIR",
+        name="ServeDirectory",
+        section="Output",
+        parse=config_make_path_parser(required=False),
+        help="Path to use when running 'mkosi serve'",
     ),
     ConfigSetting(
         dest="image_version",
@@ -3967,6 +3976,7 @@ def summary(config: Config) -> str:
                     Cache Directory: {none_to_none(config.cache_dir)}
             Package Cache Directory: {none_to_default(config.package_cache_dir)}
                     Build Directory: {none_to_none(config.build_dir)}
+                    Serve Directory: {none_to_none(config.serve_dir)}
                            Image ID: {config.image_id}
                       Image Version: {config.image_version}
                     Split Artifacts: {yes_no(config.split_artifacts)}

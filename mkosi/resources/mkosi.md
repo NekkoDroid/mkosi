@@ -592,6 +592,12 @@ boolean argument: either `1`, `yes`, or `true` to enable, or `0`, `no`,
     in the local directory it is automatically used for this purpose (also
     see the **Files** section below).
 
+`ServeDirectory=`, `--serve-dir=`
+:   Takes a path to a directory to use as root directory when running
+    `mkosi serve`, overriding the usual output directory path. This is useful
+    when grouping output files in a subdirectory (e.g. `OutputDirectory=mkosi.output/%v`)
+    and you want to serve all of the subdirectories at once.
+
 `ImageVersion=`, `--image-version=`
 :   Configure the image version. This accepts any string, but it is
     recommended to specify a series of dot separated components. The

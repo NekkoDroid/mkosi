@@ -4211,7 +4211,7 @@ def run_serve(args: Args, config: Config) -> None:
             binary=python_binary(config),
             network=True,
             relaxed=True,
-            options=["--chdir", config.output_dir_or_cwd()],
+            options=["--chdir", config.serve_dir or config.output_dir_or_cwd()],
         ),
     )
 
