@@ -1,0 +1,3 @@
+[submodule "mkosi/resources/mkosi-makepkg/srcinfo"]
+	path = mkosi/resources/mkosi-makepkg/srcinfo
+	url = https://gitlab.archlinux.org/nekkodroid/srcinfo

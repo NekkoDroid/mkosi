@@ -1,0 +1,52 @@
+#!/usr/bin/python3
+
+import json
+import os
+import sys
+
+from pathlib import Path
+from srcinfo import Srcinfo, parse
+from srcinfo.typing import Provides
+
+
+def srcinfo_from(dir: Path) -> Srcinfo:
+    with open(dir / ".SRCINFO") as file:
+        srcinfo = parse(file)
+
+        if dir.name != srcinfo.pkgbase:
+            raise Exception(f'Name of directory "{dir}" does not match pkgbase "{srcinfo.pkgbase}"')
+
+        return srcinfo
+
+
+srcdir = Path(os.environ["SRCDIR"]) / "input"
+srcinfos = {dir.parent.name: srcinfo_from(dir.parent) for dir in srcdir.glob("*/PKGBUILD")}
+srcinfo = srcinfos[os.environ["SUBIMAGE"]]
+
+arch = os.environ["DISTRIBUTION_ARCHITECTURE"]
+buildpackages = srcinfo.depends[arch]
+buildpackages += srcinfo.makedepends[arch]
+buildpackages += srcinfo.checkdepends[arch]
+
+def is_dependency_provides(provides: Provides) -> bool:
+    return any(map(provides.satisfies, buildpackages))
+
+def is_dependency_srcinfo(srcinfo: Srcinfo) -> bool:
+    version = f"{srcinfo.pkgver}-{srcinfo.pkgrel}"
+    if srcinfo.epoch is not None:
+        version = f"{srcinfo.epoch}:{version}"
+
+    provides: list[Provides] = list()
+    for pkgname, pkginfo in srcinfo.pkgname.items():
+        provides.append(Provides(f"{pkgname}={version}"))
+        provides += pkginfo.provides[arch]
+
+    return any(map(is_dependency_provides, provides))
+
+dependencies = filter(is_dependency_srcinfo, srcinfos.values())
+dependencies = [srcinfo.pkgbase for srcinfo in dependencies]
+
+config = json.load(sys.stdin)
+config["BuildPackages"] += buildpackages
+config["Dependencies"] += dependencies
+json.dump(config, sys.stdout)

@@ -1,0 +1,38 @@
+#!/bin/sh -eu
+
+cd "$SRCDIR/input/$SUBIMAGE"
+
+export PKGDEST="$SRCDIR/output"
+export SRCDEST="$BUILDROOT/files"
+
+makepkg() {
+    env EUID=123 makepkg "$@" || {
+        exitcode="$?"
+
+        # https://pacman.archlinux.page/makepkg.8.html#_errors
+        # The package has already been built. We will just handle this like a successful build.
+        [ "$exitcode" = "13" ] || return "$exitcode"
+    }
+}
+
+run_prepare() {
+    if [ "$1" != "build" ]; then
+        return 0
+    fi
+
+    if test -d keys/pgp; then
+        gpg --import keys/pgp/*.asc
+    fi
+
+    makepkg --verifysource
+}
+
+run_build() {
+    makepkg --skipinteg
+}
+
+case "$(basename "$0")" in
+    ("prepare") run_prepare "$@";;
+    ("build-script") run_build "$@";;
+    (*) exit 1;;
+esac

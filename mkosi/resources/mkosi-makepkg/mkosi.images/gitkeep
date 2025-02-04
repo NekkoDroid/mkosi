@@ -1,0 +1,2 @@
+# Not ".gitkeep" as dotfiles seem to be ignored when including resources in a python package
+# This file gets mounted over and the directory will contain symlinks to a common image config

@@ -20,9 +20,10 @@ bootable = [
 
 [project.scripts]
 mkosi = "mkosi.__main__:main"
-mkosi-initrd = "mkosi.initrd:main"
-mkosi-sandbox = "mkosi.sandbox:main"
 mkosi-addon = "mkosi.addon:main"
+mkosi-initrd = "mkosi.initrd:main"
+mkosi-makepkg = "mkosi.makepkg:main"
+mkosi-sandbox = "mkosi.sandbox:main"
 
 [tool.setuptools]
 packages = [
@@ -38,6 +39,7 @@ packages = [
     "man/*",
     "mkosi-addon/**/*",
     "mkosi-initrd/**/*",
+    "mkosi-makepkg/**/*",
     "mkosi-tools/**/*",
     "mkosi-vm/**/*",
     "repart/**/*",

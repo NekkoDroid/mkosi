@@ -10,7 +10,7 @@ from typing import Optional, Union
 
 from mkosi.config import BuildSourcesEphemeral, Config
 from mkosi.log import die
-from mkosi.sandbox import OverlayOperation
+from mkosi.sandbox import OverlayOperation, mount, umount2
 from mkosi.util import PathString, flatten
 
 
@@ -28,6 +28,16 @@ def delete_whiteout_files(path: Path) -> None:
         # TODO: Use Path.stat() once we depend on Python 3.10+.
         if stat_is_whiteout(os.stat(entry, follow_symlinks=False)):
             entry.unlink()
+
+
+@contextlib.contextmanager
+def mount_tmpfs(dst: Path, *, flags: int = 0, options: str = "mode=0755") -> Iterator[Path]:
+    mount("tmpfs", str(dst), "tmpfs", flags, options)
+
+    try:
+        yield dst
+    finally:
+        umount2(str(dst))
 
 
 @contextlib.contextmanager
